@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <title>HelpDesk Triage AI — rule-first ITIL ticket triage</title>
+  <meta name="description" content="Paste an IT support ticket and get a category, an ITIL impact × urgency priority, a first-response template and next steps. Transparent rules first; optional LLM second opinion with your own API key." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Learning in public · IT support</p>
+        <h1>HelpDesk Triage AI</h1>
+        <p class="lede">Paste a ticket. The app scores it with visible rules: category, ITIL impact × urgency, a first-response template and the next checks a first-line analyst would run. An LLM is optional, and only runs if you supply your own API key.</p>
+      </div>
+      <div class="badge">No backend · Rules first · Bahrain-ready demo</div>
+    </header>
+
+    <div class="layout">
+      <aside class="panel">
+        <h2>10 sample tickets</h2>
+        <p class="muted">Load one to see how the rules behave. Each sample has an expected category and priority in the test suite.</p>
+        <div id="samples" class="samples"></div>
+      </aside>
+
+      <main>
+        <section class="panel">
+          <h2>Ticket</h2>
+          <label for="ticket">Paste the user’s email or ticket text</label>
+          <textarea id="ticket" placeholder="Example: The entire 2nd floor has no Wi-Fi and cannot reach internal systems…"></textarea>
+          <div class="meta">
+            <div>
+              <label for="meta-user">User (optional)</label>
+              <input id="meta-user" type="text" placeholder="Name or ID" />
+            </div>
+            <div>
+              <label for="meta-system">System (optional)</label>
+              <input id="meta-system" type="text" placeholder="Outlook, VPN, printer…" />
+            </div>
+            <div>
+              <label for="meta-location">Location (optional)</label>
+              <input id="meta-location" type="text" placeholder="Floor, branch, remote" />
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="btn-analyze" type="button">Triage ticket</button>
+            <button class="btn secondary" id="btn-clear" type="button">Clear</button>
+            <span class="muted">Tip: Ctrl/⌘ + Enter</span>
+          </div>
+          <p id="status" role="status"></p>
+        </section>
+
+        <section class="panel" id="empty-state">
+          <p>Results will land here. Start with a sample on the left, or paste a real ticket and press <strong>Triage ticket</strong>.</p>
+        </section>
+
+        <section class="panel" id="results" hidden>
+          <p class="muted" id="out-source"></p>
+          <div class="kpis">
+            <div class="kpi"><span>Category</span><strong id="out-category"></strong></div>
+            <div class="kpi"><span>Priority</span><strong id="out-priority" class="pill"></strong></div>
+            <div class="kpi"><span>Impact × Urgency</span><strong><span id="out-impact"></span> × <span id="out-urgency"></span></strong></div>
+            <div class="kpi"><span>Rule confidence</span><strong id="out-confidence"></strong></div>
+          </div>
+          <p class="muted" id="out-sla"></p>
+          <h2>ITIL priority matrix</h2>
+          <div id="matrix-wrap"></div>
+          <p class="muted">Highlighted cell is the score for this ticket. High impact + high urgency = P1. A single user who cannot work is usually P3, not P1.</p>
+
+          <div class="grid-2">
+            <div>
+              <h2>First-response template</h2>
+              <textarea id="out-response" readonly></textarea>
+              <div class="actions">
+                <button class="btn secondary" id="btn-copy" type="button">Copy response</button>
+              </div>
+            </div>
+            <div>
+              <h2>Next steps</h2>
+              <ol id="out-steps"></ol>
+            </div>
+          </div>
+
+          <details class="how" open>
+            <summary>Why the rules chose this</summary>
+            <p class="muted" id="out-scores"></p>
+            <ul id="out-signals"></ul>
+          </details>
+
+          <div class="actions">
+            <button class="btn ghost" id="toggle-ai" type="button" aria-expanded="false">Optional: second opinion with your own API key</button>
+          </div>
+          <div id="ai-panel" hidden>
+            <p class="muted">This is optional. The demo works fully without it. The key is sent only from your browser to the endpoint you set, is not saved on a server, and should be a personal key you can revoke.</p>
+            <div class="meta">
+              <div>
+                <label for="ai-key">API key</label>
+                <input id="ai-key" type="password" autocomplete="off" placeholder="sk-…" />
+              </div>
+              <div>
+                <label for="ai-base">API base</label>
+                <input id="ai-base" type="text" placeholder="https://api.openai.com/v1" />
+              </div>
+              <div>
+                <label for="ai-model">Model</label>
+                <input id="ai-model" type="text" placeholder="gpt-4.1-mini" />
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn secondary" id="btn-ai" type="button">Ask for a second opinion</button>
+            </div>
+            <div id="ai-output" hidden></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      <p>Built by Mohammed Abbas as a learning-in-public project while preparing for IT support and service-desk roles in Bahrain. The logic is rule-based and visible on purpose: a first-line analyst should be able to explain a priority, not hide it in a model.</p>
+      <p>Open this folder’s <code>README.md</code> for the story, what I learned, and how to host it for free on GitHub Pages. Nothing in this demo is a substitute for a live ITIL tool or a security playbook.</p>
+    </footer>
+  </div>
+  <script src="js/rules.js"></script>
+  <script src="js/samples.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
