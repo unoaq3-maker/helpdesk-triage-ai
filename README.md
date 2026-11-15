@@ -6,7 +6,7 @@ Paste an IT ticket and the page suggests a category, an ITIL priority, a first-r
 
 An optional second opinion with your own API key is there if you want it. The demo works without one. There is no backend, and you should not paste a real production ticket into a public page or a third-party API.
 
-I am Mohammed Abbas, based in Bahrain. I am studying ITIL 4 Foundation, preparing for CompTIA Security+ (target Dec 2026), and I hold CompTIA Network+ (2013, expired 2016). I wanted something you can click through, not a slide about triage.
+I am Mohammed Abbas, based in Bahrain. I am studying ITIL 4 Foundation, preparing for CompTIA Security+ (target Jan 2027), and I hold CompTIA Network+ (2013, expired 2016). I wanted something you can click through, not a slide about triage.
 
 ![HelpDesk Triage AI homepage](docs/homepage.png)
 
